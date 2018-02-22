@@ -12,6 +12,7 @@ using Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Etw.Configuration;
 using Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Tests.TestObjects;
 using Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Tests.TestSupport;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using EventSourceSettings = Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Etw.Configuration.EventSourceSettings;
 
 namespace Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Tests.Etw
 {
@@ -30,9 +31,9 @@ namespace Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Tests.Etw
     {
         protected readonly TimeSpan AsyncProcessTimeout = TimeSpan.FromSeconds(15);
         protected TraceEventService sut;
-        protected List<EventSourceSettings> eventSources;
+        protected List<SemanticLogging.Etw.Configuration.EventSourceSettings> eventSources;
         protected List<SinkSettings> sinkSettings;
-        protected EventSourceSettings sourceSettings;
+        protected SemanticLogging.Etw.Configuration.EventSourceSettings sourceSettings;
         protected InMemoryEventListener inMemoryListener;
         protected MockFormatter formatter;
         protected TraceEventServiceConfiguration configuration;
@@ -45,8 +46,8 @@ namespace Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Tests.Etw
             this.formatter = new MockFormatter();
             this.inMemoryListener = new InMemoryEventListener(this.formatter);
             var sink = new Lazy<IObserver<EventEntry>>(() => this.inMemoryListener);
-            this.sourceSettings = this.sourceSettings ?? new EventSourceSettings(EventSource.GetName(typeof(MyCompanyEventSource)));
-            this.eventSources = new List<EventSourceSettings> { this.sourceSettings };
+            this.sourceSettings = this.sourceSettings ?? new SemanticLogging.Etw.Configuration.EventSourceSettings(EventSource.GetName(typeof(MyCompanyEventSource)));
+            this.eventSources = new List<SemanticLogging.Etw.Configuration.EventSourceSettings> { this.sourceSettings };
             this.sinkSettings = new List<SinkSettings> { new SinkSettings("test", sink, this.eventSources) };
             this.configuration = new TraceEventServiceConfiguration(sinkSettings, this.serviceSettings);
 
@@ -324,8 +325,8 @@ namespace Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Tests.Etw
             {
                 base.Given();
                 var sink = new Lazy<IObserver<EventEntry>>(() => inMemoryListener);
-                sourceSettings = new EventSourceSettings(EventSource.GetName(typeof(MyCompanyEventSource)), level: EventLevel.Warning);
-                eventSources = new List<EventSourceSettings> { sourceSettings };
+                sourceSettings = new SemanticLogging.Etw.Configuration.EventSourceSettings(EventSource.GetName(typeof(MyCompanyEventSource)), level: EventLevel.Warning);
+                eventSources = new List<SemanticLogging.Etw.Configuration.EventSourceSettings> { sourceSettings };
                 sinkSettings = new List<SinkSettings> { new SinkSettings("test", sink, eventSources) };
                 configuration = new TraceEventServiceConfiguration(sinkSettings);
                 this.sut = new TraceEventService(configuration);
@@ -364,8 +365,8 @@ namespace Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Tests.Etw
             {
                 base.Given();
                 var sink = new Lazy<IObserver<EventEntry>>(() => inMemoryListener);
-                sourceSettings = new EventSourceSettings(EventSource.GetName(typeof(MyCompanyEventSource)), level: EventLevel.Warning, matchAnyKeyword: MyCompanyEventSource.Keywords.Diagnostic);
-                eventSources = new List<EventSourceSettings> { sourceSettings };
+                sourceSettings = new SemanticLogging.Etw.Configuration.EventSourceSettings(EventSource.GetName(typeof(MyCompanyEventSource)), level: EventLevel.Warning, matchAnyKeyword: MyCompanyEventSource.Keywords.Diagnostic);
+                eventSources = new List<SemanticLogging.Etw.Configuration.EventSourceSettings> { sourceSettings };
                 sinkSettings = new List<SinkSettings> { new SinkSettings("test", sink, eventSources) };
                 configuration = new TraceEventServiceConfiguration(sinkSettings);
                 this.sut = new TraceEventService(configuration);

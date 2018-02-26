@@ -115,6 +115,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Etw
 
         private void Initialize()
         {
+//            this.session = TraceEventUtil.CreateSession(this.sessionName);
             this.session = TraceEventUtil.CreateSession(this.sessionName);
 
             // Hook up the ETWTraceEventSource to the specified session
@@ -136,15 +137,16 @@ namespace Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Etw
 
             foreach (var eventSource in this.eventSources)
             {
-                // Bind the provider (EventSource/EventListener) with the session
-                TraceEventUtil.EnableProvider(
-                    this.session,
-                    eventSource.EventSourceId,
-                    eventSource.Level,
-                    eventSource.MatchAnyKeyword,
-                    eventSource.Arguments,
-                    eventSource.ProcessNamesToFilter);
-            }
+        // Bind the provider (EventSource/EventListener) with the session
+        //TraceEventUtil.EnableProvider(
+        //    this.session,
+        //    eventSource.Name,
+        //    eventSource.Level,
+        //    eventSource.MatchAnyKeyword,
+        //    eventSource.Arguments,
+        //    eventSource.ProcessNamesToFilter);
+              TraceEventUtil.EnableProvider(session, eventSource.Name);
+      }
 
             // source.Process() is blocking so we need to launch it on a separate thread.
             this.workerTask = Task.Factory.StartNew(() => this.source.Process(), TaskCreationOptions.LongRunning).

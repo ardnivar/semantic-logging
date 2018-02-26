@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.27130.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SemanticLogging", "Src\SemanticLogging\SemanticLogging.csproj", "{2CD4105B-0DD6-4C18-9B37-05D8E8F57303}"
 EndProject
@@ -37,6 +37,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SemanticLogging.TextFile", "Src\SemanticLogging.TextFile\SemanticLogging.TextFile.csproj", "{4B187511-187B-48B1-A593-18BA835B49C3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SemanticLogging.EventSourceAnalyzer", "Src\SemanticLogging.EventSourceAnalyzer\SemanticLogging.EventSourceAnalyzer.csproj", "{27EACC2A-EE11-420B-8760-4945412B0C4A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MGS.InfluxDbMetrics", "Src\MGS.InfluxDbMetrics\MGS.InfluxDbMetrics.csproj", "{E003AB11-5884-4B9A-A57A-6706A51315D5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -76,11 +78,16 @@ Global
 		{27EACC2A-EE11-420B-8760-4945412B0C4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{27EACC2A-EE11-420B-8760-4945412B0C4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{27EACC2A-EE11-420B-8760-4945412B0C4A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E003AB11-5884-4B9A-A57A-6706A51315D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E003AB11-5884-4B9A-A57A-6706A51315D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E003AB11-5884-4B9A-A57A-6706A51315D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E003AB11-5884-4B9A-A57A-6706A51315D5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		EnterpriseLibraryConfigurationToolBinariesPathV6 = packages\EnterpriseLibrary.TransientFaultHandling.6.0.1304.0\lib\portable-net45+win+wp8;packages\EnterpriseLibrary.TransientFaultHandling.Data.6.0.1304.1\lib\NET45
+		SolutionGuid = {7C71604C-DB36-4787-A71F-69DE3364268F}
 	EndGlobalSection
 EndGlobal

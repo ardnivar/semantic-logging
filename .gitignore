@@ -131,3 +131,4 @@ $RECYCLE.BIN/
 .DS_Store
 
 _NCrunch*
+/source/.vs/SemanticLogging/v15/Server/sqlite3

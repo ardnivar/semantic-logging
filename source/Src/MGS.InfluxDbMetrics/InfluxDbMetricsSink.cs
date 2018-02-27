@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
+using InfluxData.Net.Common.Enums;
+using InfluxData.Net.InfluxDb;
+using InfluxData.Net.InfluxDb.Models;
 using Microsoft.Practices.EnterpriseLibrary.SemanticLogging;
 using Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Utility;
 
@@ -9,30 +13,35 @@ namespace MGS.InfluxDbMetrics
 {
   public sealed class InfluxDbSink : IObserver<EventEntry>, IDisposable
   {
-    private readonly int waitWriteTime;
     private const int MaxBufferSize = 10 * 1024;
     private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
 
     private readonly BufferedEventPublisher<EventEntry> _bufferedPublisher;
-    private readonly InfluxDb influxDb;
 
-    public InfluxDbSink(string url, string databaseName, string precision, int bufferInterval, int bufferingCount, int waitWriteTimeInMilliseconds)
+    private readonly InfluxDbClient _influxDbClient;
+    private readonly string _databaseName;
+    private readonly string _precision;
+
+    public InfluxDbSink(string url, string databaseName, string precision, int bufferInterval, int bufferingCount, string username, string password)
     {
       DebugLogging.Log("Starting up in ctor");
-      this.waitWriteTime = waitWriteTimeInMilliseconds;
-      var timespan = new TimeSpan(0, 0, 0, 0, bufferInterval);
+      var timespan = TimeSpan.FromMilliseconds(bufferInterval);
 
       var sinkId = "InfluxDb-" + Guid.NewGuid().ToString("N");
       _bufferedPublisher = BufferedEventPublisher<EventEntry>.CreateAndStart(sinkId, PublishEventsAsync, timespan, bufferingCount, MaxBufferSize, cancellationTokenSource.Token);
 
-      influxDb = new InfluxDb(url, databaseName, precision);
+      _databaseName = databaseName;
+      _precision = precision;
+
+      _influxDbClient = new InfluxDbClient(url, username, password, InfluxDbVersion.Latest);
+
       DebugLogging.Log("Leaving ctor");
     }
 
     public void OnCompleted()
     {
       DebugLogging.Log("In OnCompleted");
-      _bufferedPublisher.FlushAsync().Wait(waitWriteTime);
+      //      _bufferedPublisher.FlushAsync().Wait(waitWriteTime);
       Dispose();
       DebugLogging.Log("Leaving OnCompleted");
     }
@@ -79,13 +88,21 @@ namespace MGS.InfluxDbMetrics
 
     internal async Task<int> PublishEventsAsync(IList<EventEntry> collection)
     {
+      DebugLogging.Log("Publishing Collection Count " + collection.Count);
+
       try
       {
-        DebugLogging.Log("Entering PublishEventsAsync");
-        var events = CreateInfluxDbEventList(collection);
+        var points = CreatePoints(collection as IReadOnlyCollection<EventEntry>);
 
-        DebugLogging.Log("Entering BulkWriteAsync");
-        await influxDb.BulkWriteAsync(events);
+        var response = await _influxDbClient.Client.WriteAsync(points, _databaseName, null, _precision);
+
+        if (!response.Success)
+        {
+          DebugLogging.Log($"Error : Response from InfluxDb {response.StatusCode} : Body {response.Body}");
+          return 0;
+        }
+
+        return collection.Count;
       }
       catch (Exception ex)
       {
@@ -96,15 +113,16 @@ namespace MGS.InfluxDbMetrics
       return 0;
     }
 
-    private IReadOnlyCollection<InfluxDbEvent> CreateInfluxDbEventList(IList<EventEntry> collection)
+    private IEnumerable<Point> CreatePoints(IReadOnlyCollection<EventEntry> collection)
     {
-      var events = new List<InfluxDbEvent>(collection.Count);
+      var points = new List<Point>();
 
       foreach (var eventEntry in collection)
       {
-        var influxEvent = new InfluxDbEvent
+        var point = new Point
         {
-          Tags = new Dictionary<string, string>()
+          Tags = new Dictionary<string, object>(),
+          Fields = new Dictionary<string, object>()
         };
 
         for (var i = 0; i < eventEntry.Schema.Payload.Length; i++)
@@ -115,24 +133,24 @@ namespace MGS.InfluxDbMetrics
           switch (payloadName.ToLower())
           {
             case "metrictype":
-              influxEvent.Measurement = payloadValue.ToString();
+              point.Name = payloadValue.ToString();
               break;
             case "value":
-              influxEvent.Value = (long)payloadValue;
+              point.Fields.Add("value", (long)payloadValue);
               break;
             case "currenttime":
-              influxEvent.DateTime = payloadValue.ToString();
+              point.Timestamp = DateTime.Parse(payloadValue.ToString(), null, DateTimeStyles.AssumeUniversal);
               break;
             default:  // Add all other data as tags. We don't support lists of fields. 
-              influxEvent.Tags.Add(payloadName, payloadValue.ToString());
+              point.Tags.Add(payloadName, payloadValue.ToString());
               break;
           }
         }
 
-        events.Add(influxEvent);
+        points.Add(point);
       }
 
-      return events;
+      return points;
     }
   }
 }

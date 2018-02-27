@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using Polly;
 
 namespace MGS.InfluxDbMetrics
 {
@@ -62,14 +59,15 @@ namespace MGS.InfluxDbMetrics
     /// Writes multiple events to InfluxDb in a single call.
     /// </summary>
     /// <param name="events" cref="InfluxDbEvent">List of events to send to InfluxDb.</param>
-    public async Task BulkWriteAsync(IReadOnlyCollection<InfluxDbEvent> events)
+    public async Task<bool> BulkWriteAsync(IReadOnlyCollection<InfluxDbEvent> events)
     {
       if (events == null || events.Count == 0)
       {
-        return;
+        return true;
       }
 
       var sb = new StringBuilder(StringBuilderInitialCapacity);
+
       foreach (var ev in events)
       {
         if (ev.Measurement == null)
@@ -88,19 +86,24 @@ namespace MGS.InfluxDbMetrics
         sb.Append($"{payload}{BulkLineTerminator}");
       }
 
-      var policy = Policy
-        .Handle<WebException>()
-        .Or<HttpRequestException>()
-        .Or<TaskCanceledException>()
-        .WaitAndRetryAsync(new[]
-        {
-          TimeSpan.FromMilliseconds(200),
-          TimeSpan.FromMilliseconds(400),
-          TimeSpan.FromMilliseconds(600)
-        }, (exception, span) => { Debug.Write($"InfluxDb http error : {exception.Message}"); });
+      var influxDbRequest = sb.ToString();
+
+      DebugLogging.Log(influxDbRequest);
+
+      //var policy = Policy
+      //  .Handle<WebException>()
+      //  .Or<HttpRequestException>()
+      //  .Or<TaskCanceledException>()
+      //  .WaitAndRetryAsync(new[]
+      //  {
+      //    TimeSpan.FromMilliseconds(200),
+      //    TimeSpan.FromMilliseconds(400),
+      //    TimeSpan.FromMilliseconds(600)
+      //  }, (exception, span) => { Debug.Write($"InfluxDb http error : {exception.Message}"); });
 
       DebugLogging.Log("SendAsync");
-      await policy.ExecuteAsync(() => SendAsync(sb.ToString()));
+//      await policy.ExecuteAsync(() => SendAsync(influxDbRequest));
+      return await SendAsync(influxDbRequest);
     }
 
     /*
@@ -108,7 +111,7 @@ namespace MGS.InfluxDbMetrics
       4xx: InfluxDB could not understand the request.
       5xx: The system is overloaded or significantly impaired.         
      */
-    private async Task SendAsync(string payload)
+    private async Task<bool> SendAsync(string payload)
     {
       using (var content = new StringContent(payload))
       {
@@ -117,8 +120,10 @@ namespace MGS.InfluxDbMetrics
           if (!responseInfo.IsSuccessStatusCode)
           {
             var response = await responseInfo.Content.ReadAsStringAsync().ConfigureAwait(false);
-            Debug.Write($"InfluxDbSink : Error in http request HttpStatusCode : {responseInfo.StatusCode} | Response : {response}");
+            DebugLogging.Log($"InfluxDbSink : Error in http request HttpStatusCode : {responseInfo.StatusCode} | Response : {response}");
           }
+
+          return responseInfo.IsSuccessStatusCode;
         }
       }
     }

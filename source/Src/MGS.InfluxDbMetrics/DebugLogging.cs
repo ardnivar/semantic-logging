@@ -12,7 +12,7 @@ namespace MGS.InfluxDbMetrics
     {
       if (LoggingEnabled)
       {
-        File.AppendAllText(@"c:\mgslog\InfluxDb.log", $"{DateTime.Now}\t{message}{Environment.NewLine}");
+        File.AppendAllText(@"c:\mgslog\InfluxDb.log", $"InfluxDb : {DateTime.Now}\t{message}{Environment.NewLine}");
       }
     }
   }

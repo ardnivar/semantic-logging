@@ -58,7 +58,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Etw
                     currentSource.CopyValuesFrom(updatedSource);
                     TraceEventUtil.EnableProvider(
                         this.session,
-                        currentSource.EventSourceId,
+                        currentSource.Name,
                         currentSource.Level,
                         currentSource.MatchAnyKeyword,
                         currentSource.Arguments,
@@ -72,7 +72,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Etw
             {
                 TraceEventUtil.EnableProvider(
                     this.session,
-                    newSource.EventSourceId,
+                    newSource.Name,
                     newSource.Level,
                     newSource.MatchAnyKeyword,
                     newSource.Arguments,

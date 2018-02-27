@@ -18,7 +18,7 @@ namespace MGS.InfluxDbMetrics
 
     private readonly BufferedEventPublisher<EventEntry> _bufferedPublisher;
 
-    private readonly InfluxDbClient _influxDbClient;
+    private readonly IInfluxDbClient _influxDbClient;
     private readonly string _databaseName;
     private readonly string _precision;
 
@@ -127,21 +127,21 @@ namespace MGS.InfluxDbMetrics
 
         for (var i = 0; i < eventEntry.Schema.Payload.Length; i++)
         {
-          var payloadName = eventEntry.Schema.Payload[i];
+          var payloadName = eventEntry.Schema.Payload[i].ToLower();
           var payloadValue = eventEntry.Payload[i];
 
-          switch (payloadName.ToLower())
+          switch (payloadName)
           {
             case "metrictype":
               point.Name = payloadValue.ToString();
               break;
-            case "value":
+            case "value":   // We currently only support a single field.
               point.Fields.Add("value", (long)payloadValue);
               break;
             case "currenttime":
               point.Timestamp = DateTime.Parse(payloadValue.ToString(), null, DateTimeStyles.AssumeUniversal);
               break;
-            default:  // Add all other data as tags. We don't support lists of fields. 
+            default:  // Add all other data as tags. 
               point.Tags.Add(payloadName, payloadValue.ToString());
               break;
           }

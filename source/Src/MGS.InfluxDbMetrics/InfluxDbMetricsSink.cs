@@ -60,7 +60,6 @@ namespace MGS.InfluxDbMetrics
           SemanticLoggingEventSource.Log.CustomSinkUnhandledFault("InfluxDbMetrics : Unable to post to BufferedEventPublisher.");
         }
         DebugLogging.Log("Leaving normally OnNext");
-
       }
       catch (Exception e)
       {
@@ -76,7 +75,6 @@ namespace MGS.InfluxDbMetrics
     {
       cancellationTokenSource.Cancel();
       _bufferedPublisher.Dispose();
-      GC.SuppressFinalize(this);
     }
 
     internal async Task<int> PublishEventsAsync(IList<EventEntry> collection)

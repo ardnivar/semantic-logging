@@ -100,7 +100,6 @@ namespace MGS.InfluxDbMetrics
         }, (exception, span) => { Debug.Write($"InfluxDb http error : {exception.Message}"); });
 
       DebugLogging.Log("SendAsync");
-//      await SendAsync(sb.ToString());
       await policy.ExecuteAsync(() => SendAsync(sb.ToString()));
     }
 

@@ -18,7 +18,7 @@
         <parameter name="url" type="System.String" value="http://localhost:8086" />
         <parameter name="databaseName" type="System.String" value="ravi" />
         <parameter name="precision" type="System.String" value="ms" />
-        <parameter name="bufferInterval" type="System.Int32" value="10000" />
+        <parameter name="bufferInterval" type="System.Int32" value="3000" />
         <parameter name="bufferingCount" type="System.Int32" value="20" />
         <parameter name="waitWriteTimeInMilliseconds" type="System.Int32" value="100" />
       </parameters>

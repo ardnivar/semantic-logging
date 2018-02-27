@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 using InfluxData.Net.Common.Enums;
 using InfluxData.Net.InfluxDb;
 using InfluxData.Net.InfluxDb.Models;
+using MGS.InfluxDbMetrics;
 using Microsoft.Practices.EnterpriseLibrary.SemanticLogging;
 using Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Utility;
 
-namespace MGS.InfluxDbMetrics
+namespace InfluxDb
 {
   public sealed class InfluxDbSink : IObserver<EventEntry>, IDisposable
   {
@@ -139,7 +140,7 @@ namespace MGS.InfluxDbMetrics
               point.Fields.Add("value", (long)payloadValue);
               break;
             case "currenttime":
-              point.Timestamp = DateTime.Parse(payloadValue.ToString(), null, DateTimeStyles.AssumeUniversal);
+              point.Timestamp = GetDateTime(payloadValue.ToString());
               break;
             default:  // Add all other data as tags. 
               point.Tags.Add(payloadName, payloadValue.ToString());
@@ -151,6 +152,22 @@ namespace MGS.InfluxDbMetrics
       }
 
       return points;
+    }
+
+    private DateTime GetDateTime(string currentTime)
+    {
+      if (String.IsNullOrWhiteSpace(currentTime))
+      {
+        return DateTime.UtcNow;
+      }
+
+      var success = DateTime.TryParse(currentTime, null, DateTimeStyles.AssumeUniversal, out var dtResult);
+      if (success)
+      {
+        return dtResult;
+      }
+
+      return DateTime.UtcNow;
     }
   }
 }

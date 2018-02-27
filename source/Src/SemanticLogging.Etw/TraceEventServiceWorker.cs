@@ -20,7 +20,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Etw
         private readonly SemanticLoggingEventSource logger = SemanticLoggingEventSource.Log;
         private readonly TraceEventSchemaCache schemaCache = new TraceEventSchemaCache();
         private readonly IObserver<EventEntry> sink;
-        private readonly List<EventSourceSettings> eventSources;
+        private readonly List<Configuration.EventSourceSettings> eventSources;
         private readonly string sessionName;
         private TraceEventManifestsCache manifestCache;
         private ETWTraceEventSource source;
@@ -36,15 +36,15 @@ namespace Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Etw
             Guard.ArgumentNotNull(serviceSettings, "serviceSettings");
 
             this.sink = sinkSettings.Sink;
-            this.eventSources = new List<EventSourceSettings>(sinkSettings.EventSources);
+            this.eventSources = new List<Configuration.EventSourceSettings>(sinkSettings.EventSources);
             this.sessionName = serviceSettings.SessionNamePrefix + "-" + sinkSettings.Name;
             this.Initialize();
         }
 
-        public void UpdateSession(IEnumerable<EventSourceSettings> updatedEventSources)
+        public void UpdateSession(IEnumerable<Configuration.EventSourceSettings> updatedEventSources)
         {
             Guard.ArgumentNotNull(updatedEventSources, "updatedEventSources");
-            var updatedSources = updatedEventSources as EventSourceSettings[] ?? updatedEventSources.ToArray();
+            var updatedSources = updatedEventSources as Configuration.EventSourceSettings[] ?? updatedEventSources.ToArray();
 
             var eventSourceNameComparer = new EventSourceSettingsEqualityComparer(nameOnly: true);
             var eventSourceFullComparer = new EventSourceSettingsEqualityComparer(nameOnly: false);
@@ -115,7 +115,6 @@ namespace Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Etw
 
         private void Initialize()
         {
-//            this.session = TraceEventUtil.CreateSession(this.sessionName);
             this.session = TraceEventUtil.CreateSession(this.sessionName);
 
             // Hook up the ETWTraceEventSource to the specified session
@@ -137,16 +136,15 @@ namespace Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Etw
 
             foreach (var eventSource in this.eventSources)
             {
-        // Bind the provider (EventSource/EventListener) with the session
-        //TraceEventUtil.EnableProvider(
-        //    this.session,
-        //    eventSource.Name,
-        //    eventSource.Level,
-        //    eventSource.MatchAnyKeyword,
-        //    eventSource.Arguments,
-        //    eventSource.ProcessNamesToFilter);
-              TraceEventUtil.EnableProvider(session, eventSource.Name);
-      }
+                // Bind the provider (EventSource/EventListener) with the session
+                TraceEventUtil.EnableProvider(
+                    this.session,
+                    eventSource.Name,
+                    eventSource.Level,
+                    eventSource.MatchAnyKeyword,
+                    eventSource.Arguments,
+                    eventSource.ProcessNamesToFilter);
+            }
 
             // source.Process() is blocking so we need to launch it on a separate thread.
             this.workerTask = Task.Factory.StartNew(() => this.source.Process(), TaskCreationOptions.LongRunning).

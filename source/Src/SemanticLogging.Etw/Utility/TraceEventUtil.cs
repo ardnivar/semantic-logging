@@ -61,27 +61,21 @@ namespace Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Etw.Utility
             IEnumerable<KeyValuePair<string, string>> arguments,
             IEnumerable<string> processNamesToFilter,
             bool sendManifest = true)
-        {
+        {     
             // Make explicit the invocation for requesting the manifest from the EventSource (Provider).
             var argumentsDictionary = arguments.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
             if (sendManifest)
             {
-                argumentsDictionary["Command"] = "SendManifest";
+              argumentsDictionary["Command"] = "SendManifest";
             }
 
-            var options =
-                new TraceEventProviderOptions
+            var options = new TraceEventProviderOptions
                 {
-                    Arguments = argumentsDictionary,
-                    ProcessNameFilter = processNamesToFilter.ToArray()
+                  // Arguments = argumentsDictionary,   // todo : Not sure why this doesn't work.
+                  ProcessNameFilter = processNamesToFilter.ToArray()
                 };
 
             session.EnableProvider(providerName, (TraceEventLevel)level, (ulong)matchAnyKeyword, options);
-        }
-
-      internal static void EnableProvider(TraceEventSession session, string name)
-      {
-            session.EnableProvider(name);
         }
     }
 }

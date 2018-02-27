@@ -12,7 +12,7 @@
 
     <customSink name="metrics" type="MGS.InfluxDbMetrics.InfluxDbSink, MGS.InfluxDbMetrics">
       <sources>
-        <eventSource name="MGS-Metrics" />
+        <eventSource name="MGS-Metrics"  />
       </sources>
       <parameters>
         <parameter name="url" type="System.String" value="http://localhost:8086" />

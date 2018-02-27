@@ -34,7 +34,7 @@ namespace Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Tests.Etw
         {
             var sinks = new List<SinkSettings>();
 
-            var sources = new List<EventSourceSettings> { new EventSourceSettings("test"), new EventSourceSettings("test") };
+            var sources = new List<SemanticLogging.Etw.Configuration.EventSourceSettings> { new SemanticLogging.Etw.Configuration.EventSourceSettings("test"), new SemanticLogging.Etw.Configuration.EventSourceSettings("test") };
             var sink = new SinkSettings("test", new Lazy<IObserver<EventEntry>>(() => new InMemoryEventListener()), sources);
             sinks.Add(sink);
             sinks.Add(sink);

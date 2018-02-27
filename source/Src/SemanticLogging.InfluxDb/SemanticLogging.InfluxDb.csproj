@@ -7,8 +7,8 @@
     <ProjectGuid>{E003AB11-5884-4B9A-A57A-6706A51315D5}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MGS.InfluxDbMetrics</RootNamespace>
-    <AssemblyName>MGS.InfluxDbMetrics</AssemblyName>
+    <RootNamespace>InfluxDb</RootNamespace>
+    <AssemblyName>InfluxDb</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />

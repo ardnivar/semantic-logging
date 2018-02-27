@@ -38,7 +38,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SemanticLogging.TextFile", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SemanticLogging.EventSourceAnalyzer", "Src\SemanticLogging.EventSourceAnalyzer\SemanticLogging.EventSourceAnalyzer.csproj", "{27EACC2A-EE11-420B-8760-4945412B0C4A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SemanticLogging.InfluxDb", "Src\MGS.InfluxDbMetrics\SemanticLogging.InfluxDb.csproj", "{E003AB11-5884-4B9A-A57A-6706A51315D5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SemanticLogging.InfluxDb", "Src\SemanticLogging.InfluxDb\SemanticLogging.InfluxDb.csproj", "{E003AB11-5884-4B9A-A57A-6706A51315D5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

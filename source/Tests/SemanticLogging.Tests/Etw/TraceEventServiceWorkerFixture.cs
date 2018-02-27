@@ -10,6 +10,7 @@ using Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Etw.Configuration;
 using Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Tests.TestObjects;
 using Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Tests.TestSupport;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using EventSourceSettings = Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Etw.Configuration.EventSourceSettings;
 
 namespace Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Tests.Etw
 {
@@ -102,9 +103,9 @@ namespace Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Tests.Etw
             public void then_session_is_updated_with_new_eventSources()
             {
                 var currentEventSource = this.sinkSettings.EventSources.First();
-                var newEventSource = new EventSourceSettings(currentEventSource.Name, level: currentEventSource.Level, matchAnyKeyword: EventKeywords.AuditSuccess);
+                var newEventSource = new SemanticLogging.Etw.Configuration.EventSourceSettings(currentEventSource.Name, level: currentEventSource.Level, matchAnyKeyword: EventKeywords.AuditSuccess);
 
-                this.Sut.UpdateSession(new List<EventSourceSettings> { newEventSource });
+                this.Sut.UpdateSession(new List<SemanticLogging.Etw.Configuration.EventSourceSettings> { newEventSource });
 
                 Assert.AreEqual(newEventSource.Level, currentEventSource.Level);
                 Assert.AreEqual(newEventSource.MatchAnyKeyword, currentEventSource.MatchAnyKeyword);
@@ -117,14 +118,14 @@ namespace Microsoft.Practices.EnterpriseLibrary.SemanticLogging.Tests.Etw
             {
                 var currentEventSource = this.sinkSettings.EventSources.First();
                 var newEventSource =
-                    new EventSourceSettings(
+                    new SemanticLogging.Etw.Configuration.EventSourceSettings(
                         currentEventSource.Name,
                         level: currentEventSource.Level,
                         matchAnyKeyword: currentEventSource.MatchAnyKeyword,
                         arguments: new[] { new KeyValuePair<string, string>("key", "value") },
                         processNameFilters: new[] { "process" });
 
-                this.Sut.UpdateSession(new List<EventSourceSettings> { newEventSource });
+                this.Sut.UpdateSession(new List<SemanticLogging.Etw.Configuration.EventSourceSettings> { newEventSource });
 
                 Assert.AreEqual(newEventSource.Level, currentEventSource.Level);
                 Assert.AreEqual(newEventSource.MatchAnyKeyword, currentEventSource.MatchAnyKeyword);
